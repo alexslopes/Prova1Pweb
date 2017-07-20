@@ -36,9 +36,15 @@ public class Tratamento implements Runnable{
             PrintWriter escrever = new PrintWriter(socket.getOutputStream(), true);
             usr.setEmail(ler.nextLine());
             usr.setCpf(ler.nextLine());
-            escrever.println(usr.validarEmail());
-            escrever.println(usr.isValidCpf());
-            processRequest();
+            //System.out.println(usr.isValidCpf() && usr.validarEmail());
+            if(!usr.isValidCpf())
+                escrever.println("Cpf inválido, colocar os 11 digitos");
+            else if(!usr.validarEmail())
+                escrever.println("Email inválido");
+            else{
+                escrever.println("Arquivo pronto");
+                processRequest();
+            }
         } catch (IOException ex) {
             Logger.getLogger(Tratamento.class.getName()).log(Level.SEVERE, null, ex);
         }

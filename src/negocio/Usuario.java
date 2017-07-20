@@ -39,8 +39,7 @@ public class Usuario {
     }
     
     private String formatarCPF(String cpf){
-        cpf.replace(".", "").replace("-", "");
-        return cpf;
+        return cpf.replace(".", "").replace("-", "");
     }
     
     private boolean validarCPF(String cpf){

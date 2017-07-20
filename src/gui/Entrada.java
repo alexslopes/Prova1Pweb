@@ -8,6 +8,7 @@ package gui;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -147,8 +148,14 @@ public class Entrada extends javax.swing.JFrame {
         
         try {
             PrintWriter escrever = new PrintWriter(socket.getOutputStream(), true);
+            Scanner ler = new Scanner(socket.getInputStream());
             escrever.println(this.txtEmail.getText());
             escrever.println(this.txtCPF.getText());
+            String msg = ler.nextLine();
+            JOptionPane.showMessageDialog(null, msg, msg, JOptionPane.INFORMATION_MESSAGE);
+
+            
+               
         } catch (IOException ex) {
             Logger.getLogger(Entrada.class.getName()).log(Level.SEVERE, null, ex);
         }
