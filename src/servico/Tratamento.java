@@ -5,8 +5,10 @@
  */
 package servico;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -20,57 +22,80 @@ import negocio.Usuario;
  *
  * @author alex
  */
-public class Tratamento implements Runnable{
+public class Tratamento implements Runnable {
+
     Socket socket;
     Usuario usr;
-    
-    public Tratamento(Socket socket){
+
+    public Tratamento(Socket socket) {
         this.socket = socket;
         this.usr = new Usuario();
     }
-    
+
     @Override
-    public void run(){
+    public void run() {
         try {
             Scanner ler = new Scanner(socket.getInputStream());
             PrintWriter escrever = new PrintWriter(socket.getOutputStream(), true);
-            
+
             boolean email;
             boolean cpf;
-            do{  
-            usr.setEmail(ler.nextLine());
-            usr.setCpf(ler.nextLine());
-            
-            email = usr.isValidEmail();
-            cpf = usr.isValidCpf();
-            
-          
-              
-              
-            if(!email){
-                if(!cpf)
-                    escrever.println("Email e cpf inválidos, porfavor preencher corretamente.");
-                escrever.println("Email inválido, porfavor preencher corretamente.");
-            }else if(!cpf)
-                escrever.println("CPF inválido, porfavor preencher corretamente.");
-            else{
-                escrever.println("Arquivo pronto");
-                processRequest();
-            }
-          }while(!(cpf && email));
-            
+            boolean cnpj;
+            do {
+                usr.setEmail(ler.nextLine());
+                usr.setCpf(ler.nextLine());
+                usr.setCnpj(ler.nextLine());
+                
+                String msgEmail = "";
+                String msgCNPJ = "";
+                String msgCPF = "";
+                
+                email = usr.isValidEmail();
+                cpf = usr.isValidCpf();
+                cnpj = usr.isValidCnpj();
+
+                if (!email) 
+                    msgEmail = "Email,";   
+                if (!cpf) 
+                    msgCPF = "CPF,";
+                if (!cnpj) 
+                    msgCNPJ = "CNPJ,";
+                if(!email || !cpf || !cnpj){
+                escrever.println("Esta incorreto: " + msgEmail + msgCPF  + msgCNPJ + " por favor preencher novamente.");
+                } else {
+                    escrever.println("Arquivo pronto");
+                    processRequest();
+                }
+            } while (!(cpf && email && cnpj));
+
         } catch (IOException ex) {
             Logger.getLogger(Tratamento.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    private void processRequest() throws IOException{
+
+    private void processRequest() throws IOException {
         File file = new File("arquivo.txt");
-        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-        
-        writer.write(usr.getEmail());
-        writer.newLine();
-        writer.write(usr.getCpf());
+        /*try {
+
+            BufferedReader lerArq = new BufferedReader(new FileReader(file));
+
+            String linha = lerArq.readLine();
+            do{
+                System.out.printf(linha);
+                linha = lerArq.readLine(); // lê da segunda até a última linha
+                if(linha == null)
+                    escreverArquivo(file);
+            }while (linha != null); 
+            escreverArquivo(file);
+        } catch (Exception e) {
+            escreverArquivo(file);
+        }*/
+        escreverArquivo(file);
+    }
+
+    private void escreverArquivo(File file) throws IOException {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
+        writer.write(usr.getEmail() + ", " + usr.getCpf() + ", " + usr.getCnpj());
         writer.newLine();
         writer.close();
     }
